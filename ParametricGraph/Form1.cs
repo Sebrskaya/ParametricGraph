@@ -27,6 +27,8 @@ namespace ParametricGraph
             List<double> yValues2 = new List<double>();
             List<double> xValues3 = new List<double>();
             List<double> yValues3 = new List<double>();
+            List<double> xValues4 = new List<double>();
+            List<double> yValues4 = new List<double>();
 
             for (double t = -2 * Math.PI; t <= 2* Math.PI ; t += tStep)
             {
@@ -40,27 +42,32 @@ namespace ParametricGraph
             {
                 Complex z2 = new Complex(1, 1 * t);
                 Complex z3 = z2 * z2;
+                
 
                 xValues2.Add(z3.Real);
                 yValues2.Add(z3.Imaginary);
 
                 xValues3.Add(-z3.Real);
                 yValues3.Add(-z3.Imaginary);
+                
+                xValues4.Add(z2.Real);
+                yValues4.Add(z2.Imaginary);
             }
 
-            PlotGraph(xValues1.ToArray(), yValues1.ToArray(), "Series1");
-            PlotGraph(xValues2.ToArray(), yValues2.ToArray(), "Series2");
-            PlotGraph(xValues3.ToArray(), yValues3.ToArray(), "Series3");
+            PlotGraph(xValues1.ToArray(), yValues1.ToArray(), "Series1",chart1);
+            PlotGraph(xValues2.ToArray(), yValues2.ToArray(), "Series2", chart1);
+            PlotGraph(xValues3.ToArray(), yValues3.ToArray(), "Series3", chart1);
+            PlotGraph(xValues4.ToArray(), yValues4.ToArray(), "Series4", chart2);
         }
 
-        private void PlotGraph(double[] x, double[] y, string seriesName)
+        private void PlotGraph(double[] x, double[] y, string seriesName, Chart chart)
         {
             
-            chart1.Series[seriesName].ChartType = SeriesChartType.Point;
+            chart.Series[seriesName].ChartType = SeriesChartType.Point;
 
             for (int i = 0; i < x.Length; i++)
             {
-                chart1.Series[seriesName].Points.AddXY(x[i], y[i]);
+                chart.Series[seriesName].Points.AddXY(x[i], y[i]);
             }
         }
 
