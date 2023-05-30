@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -15,50 +15,99 @@ namespace ParametricGraph
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            PlotParametricGraph();
+            PlotComplexGraph();
         }
 
-        private void PlotParametricGraph()
+        private void PlotComplexGraph()
         {
-            // Parameters for the graph
-            double scaleX = 6.2;
-            double scaleY = 6.2;
-
-            // Step size for parameter t
             double tStep = 0.01;
+            List<double> xValues1 = new List<double>();
+            List<double> yValues1 = new List<double>();
+            List<double> xValues2 = new List<double>();
+            List<double> yValues2 = new List<double>();
+            List<double> xValues3 = new List<double>();
+            List<double> yValues3 = new List<double>();
 
-            // Lists to store x and y values
-            List<double> xValues = new List<double>();
-            List<double> yValues = new List<double>();
-
-            // Calculate x and y values for the graph
-            for (double t = 0; t <= 20 * Math.PI; t += tStep)
+            for (double t = -2 * Math.PI; t <= 2* Math.PI ; t += tStep)
             {
-                double x = scaleX * (Math.Cos(t) - Math.Cos(3.1 * t) / 3.1);
-                double y = scaleY * ((Math.Sin(t) - Math.Sin(3.1 * t)) / 3.1);
+                Complex z1 = new Complex(2 * Math.Cos(t), 1 * Math.Sin(t));
 
-                xValues.Add(x);
-                yValues.Add(y);
+                xValues1.Add(z1.Real);
+                yValues1.Add(z1.Imaginary);
             }
 
-            // Plot the parametric graph
-            PlotGraph(xValues.ToArray(), yValues.ToArray());
+            for (double t = -1 ; t <= 1; t += tStep)
+            {
+                Complex z2 = new Complex(1, 1 * t);
+                Complex z3 = z2 * z2;
+
+                xValues2.Add(z3.Real);
+                yValues2.Add(z3.Imaginary);
+
+                xValues3.Add(-z3.Real);
+                yValues3.Add(-z3.Imaginary);
+            }
+
+            PlotGraph(xValues1.ToArray(), yValues1.ToArray(), "Series1");
+            PlotGraph(xValues2.ToArray(), yValues2.ToArray(), "Series2");
+            PlotGraph(xValues3.ToArray(), yValues3.ToArray(), "Series3");
         }
 
-        private void PlotGraph(double[] x, double[] y)
+        private void PlotGraph(double[] x, double[] y, string seriesName)
         {
-            chart1.Series["Series1"].Points.Clear();
+            
+            chart1.Series[seriesName].ChartType = SeriesChartType.Point;
 
-            // Add points to the graph series
             for (int i = 0; i < x.Length; i++)
             {
-                chart1.Series["Series1"].Points.AddXY(x[i], y[i]);
+                chart1.Series[seriesName].Points.AddXY(x[i], y[i]);
             }
         }
 
         private void chart1_Click(object sender, EventArgs e)
         {
-            PlotParametricGraph();
+            PlotComplexGraph();
+        }
+    }
+
+    public class Complex
+    {
+        public double Real { get; set; }
+        public double Imaginary { get; set; }
+
+        public Complex(double real, double imaginary)
+        {
+            Real = real;
+            Imaginary = imaginary;
+        }
+
+        public static Complex operator *(Complex a, Complex b)
+        {
+            double real = a.Real * b.Real - a.Imaginary * b.Imaginary;
+            double imaginary = a.Real * b.Imaginary + a.Imaginary * b.Real;
+            return new Complex(real, imaginary);
+        }
+
+        public static Complex operator +(Complex a, Complex b)
+        {
+            double real = a.Real + b.Real;
+            double imaginary = a.Imaginary + b.Imaginary;
+            return new Complex(real, imaginary);
+        }
+
+        public static Complex operator -(Complex a, Complex b)
+        {
+            double real = a.Real - b.Real;
+            double imaginary = a.Imaginary - b.Imaginary;
+            return new Complex(real, imaginary);
+        }
+
+        public static Complex Exp(Complex z)
+        {
+            double expReal = Math.Exp(z.Real);
+            double real = expReal * Math.Cos(z.Imaginary);
+            double imaginary = expReal * Math.Sin(z.Imaginary);
+            return new Complex(real, imaginary);
         }
     }
 }
